@@ -1,5 +1,5 @@
 mlflow
-jupyter
+#jupyter
 scikit-learn
 pandas
 seaborn

@@ -58,17 +58,22 @@ def run(data_path, log_top):
         experiment_ids=experiment.experiment_id,
         run_view_type=ViewType.ACTIVE_ONLY,
         max_results=log_top,
-        order_by=["metrics.rmse ASC"]
+        order_by=["metrics.valid_rmse ASC"]
     )
     for run in runs:
         train_and_log_model(data_path=data_path, params=run.data.params)
 
     # select the model with the lowest test RMSE
     experiment = client.get_experiment_by_name(EXPERIMENT_NAME)
-    # best_run = client.search_runs( ...  )[0]
-
+    best_run = client.search_runs(
+        experiment_ids=experiment.experiment_id,
+        run_view_type=ViewType.ACTIVE_ONLY,
+        order_by=["metrics.test_rmse ASC"]
+    )[0]
+    
     # register the best model
-    # mlflow.register_model( ... )
+    best_model_uri = f"runs:/{best_run.info.run_id}/model"
+    mlflow.register_model(best_model_uri, "hyperopts-next-top-model")
 
 
 if __name__ == '__main__':

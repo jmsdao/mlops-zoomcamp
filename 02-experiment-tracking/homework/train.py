@@ -1,4 +1,5 @@
 import argparse
+import mlflow
 import os
 import pickle
 
@@ -21,10 +22,15 @@ def run(data_path):
     y_pred = rf.predict(X_valid)
 
     rmse = mean_squared_error(y_valid, y_pred, squared=False)
+    print(rmse)
 
 
 if __name__ == '__main__':
 
+    mlflow.autolog(log_models=False, exclusive=False)
+    mlflow.set_tracking_uri("sqlite:///mlflow.db")
+    mlflow.set_experiment("test-exp-1")
+    
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--data_path",

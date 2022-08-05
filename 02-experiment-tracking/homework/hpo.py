@@ -25,10 +25,15 @@ def run(data_path, num_trials):
 
     def objective(params):
 
-        rf = RandomForestRegressor(**params)
-        rf.fit(X_train, y_train)
-        y_pred = rf.predict(X_valid)
-        rmse = mean_squared_error(y_valid, y_pred, squared=False)
+        with mlflow.start_run():
+            rf = RandomForestRegressor(**params)
+            rf.fit(X_train, y_train)
+            y_pred = rf.predict(X_valid)
+            rmse = mean_squared_error(y_valid, y_pred, squared=False)
+
+            mlflow.log_metric("valid_rmse", rmse)
+            for param_name, value in params.items():
+                mlflow.log_param(param_name, value)
 
         return {'loss': rmse, 'status': STATUS_OK}
 
